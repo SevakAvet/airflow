@@ -30,6 +30,7 @@ import six
 from airflow import configuration
 from airflow.configuration import conf, AirflowConfigParser, parameterized_config
 from tests.compat import mock
+from tests.test_utils.reset_warning_registry import reset_warning_registry
 
 if six.PY2:
     # Need `assertWarns` back-ported from unittest2
@@ -432,13 +433,14 @@ AIRFLOW_HOME = /root/airflow
 
                 self.assertEqual(test_conf.get('core', 'task_runner'), 'StandardTaskRunner')
 
-        with warnings.catch_warnings(record=True) as w:
-            with env_vars(AIRFLOW__CORE__TASK_RUNNER='NotBashTaskRunner'):
-                test_conf = make_config()
+        with reset_warning_registry():
+            with warnings.catch_warnings(record=True) as w:
+                with env_vars(AIRFLOW__CORE__TASK_RUNNER='NotBashTaskRunner'):
+                    test_conf = make_config()
 
-                self.assertEqual(test_conf.get('core', 'task_runner'), 'NotBashTaskRunner')
+                    self.assertEqual(test_conf.get('core', 'task_runner'), 'NotBashTaskRunner')
 
-                self.assertListEqual([], w)
+                    self.assertListEqual([], w)
 
     def test_deprecated_funcs(self):
         for func in ['load_test_config', 'get', 'getboolean', 'getfloat', 'getint', 'has_option',
