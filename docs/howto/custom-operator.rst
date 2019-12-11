@@ -173,7 +173,7 @@ with actual value. Note that Jinja substitutes the operator attributes and not t
         class HelloOperator(BaseOperator):
 
             template_fields = ['guest_name']
-            template_ext = ['sql']
+            template_ext = ['.sql']
 
             @apply_defaults
             def __init__(
